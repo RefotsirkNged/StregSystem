@@ -11,17 +11,24 @@ namespace StregSystem___EksamensOpgave
         private Product _productBeingBought;
         private decimal _amount;
 
-        public BuyTransaction(Guid transactionID, User user, DateTime transactionDate, decimal transactionAmount, Product product)
+        public BuyTransaction(User user, Product product)
         {
-            _transactionID = transactionID;
+            _transactionID = Guid.NewGuid();
             _user = user;
-            _transactionDate = transactionDate;
-            _transactionAmount = transactionAmount;
+            _transactionDate = DateTime.Now;
+            _transactionAmount = product.Price;
             _productBeingBought = product;
         }
         public new bool Execute()
         {
-            //brug insufficientCreditsException her hvis der ikke er nok credits
+
+                if ((TransactionUser.Balance - TransactionAmount) < 0)
+                {
+                    throw new InsufficientCreditsException("Ikke nok penge!");
+                    return false;
+                }
+            //If no exception is thrown, do the stuff
+            TransactionUser.Balance -= TransactionAmount;
             return true;
         }
     }

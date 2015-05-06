@@ -8,6 +8,13 @@ namespace StregSystem___EksamensOpgave
 {
     class InsertCashTransaction : Transaction
     {
+        public InsertCashTransaction(User user, decimal amount)
+        {
+            _transactionID = Guid.NewGuid();
+            _user = user;
+            _transactionDate = DateTime.Now;
+            _transactionAmount = amount;
+        }
 
         public override string ToString()
         {
@@ -16,6 +23,7 @@ namespace StregSystem___EksamensOpgave
 
         public new bool Execute()
         {
+            TransactionUser.Balance += TransactionAmount;
             return true;
         }
     }

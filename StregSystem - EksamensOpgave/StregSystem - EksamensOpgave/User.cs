@@ -9,8 +9,7 @@ namespace StregSystem___EksamensOpgave
 {
     class User : IComparable
     {
-        private int _userID;
-
+        private Guid _userID;
         private string _firstName;
         private string _lastName;
         private string _userName;
@@ -19,7 +18,7 @@ namespace StregSystem___EksamensOpgave
 
         private decimal _balance;
 
-
+        //pga af at et brugernavn nødvendigvis skal være unikt, kan et userid konstrueres ud fra brugernavnet. så måske skal userid ikke være GUID?
         //Sørg for at firstname/lastname aldrig er null? i constructoren? er det nok?
 
         public User(string firstName, string lastName, string userName, string emailAddress )
@@ -29,10 +28,11 @@ namespace StregSystem___EksamensOpgave
             _userName = userName;
             _emailAddress = emailAddress;
             _balance = 0;
+            _userID = Guid.NewGuid();
         }
 
         #region Get/set
-        public int UserID
+        public Guid UserID
         {
             get { return _userID; }
             set { _userID = value; }
@@ -62,7 +62,7 @@ namespace StregSystem___EksamensOpgave
             set { _emailAddress = value; }
         }
 
-        private decimal Balance
+        public decimal Balance
         {
             get { return _balance; }
             set { _balance = value; }

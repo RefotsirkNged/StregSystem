@@ -10,6 +10,10 @@ namespace StregSystem___EksamensOpgave
     {
         static void Main(string[] args)
         {
+            StregSystem stregsystem = new StregSystem();
+            StregSystemCLI cli = new StregSystemCLI(stregsystem);
+            StregSystemCommandParser parser = new StregSystemCommandParser(cli, stregsystem);
+            cli.Start(parser);
         }
     }
 }

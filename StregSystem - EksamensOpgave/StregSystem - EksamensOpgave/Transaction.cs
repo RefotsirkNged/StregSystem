@@ -13,10 +13,6 @@ namespace StregSystem___EksamensOpgave
         protected DateTime _transactionDate;
         protected decimal _transactionAmount;
 
-        
-
-
-
 
         public bool Execute()
         {
