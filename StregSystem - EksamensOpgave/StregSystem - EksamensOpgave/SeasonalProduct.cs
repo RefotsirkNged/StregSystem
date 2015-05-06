@@ -11,7 +11,7 @@ namespace StregSystem___EksamensOpgave
         private DateTime _seasonStartDate;
         private DateTime _seasonEndDate;
 
-        public SeasonalProduct(string productName, double productPrice, bool active, bool canBeBoughtOnCredit)
+        public SeasonalProduct(string productName, decimal productPrice, bool active, bool canBeBoughtOnCredit, DateTime seasonStartDate, DateTime seasonEndDate)
         {
             //der skal somehow checkes hvilke numre der er tilgængelige...måske skal det bare dumbes down til at de bliver assignet i en rækkefølge på runtime?
             //Måske skal productID ind som parameter, og hvis id'et så er taget skal der bedes om et nyt
@@ -19,6 +19,8 @@ namespace StregSystem___EksamensOpgave
             _price = productPrice;
             _active = active;
             _canBeBoughtOncredit = canBeBoughtOnCredit;
+            _seasonStartDate = seasonStartDate;
+            _seasonEndDate = seasonEndDate;
         }
 
         #region Getter/setter
@@ -33,12 +35,6 @@ namespace StregSystem___EksamensOpgave
             get { return _seasonEndDate; }
             set { _seasonEndDate = value; }
         }
-
-        public bool Active
-        {
-            get { return _active; }
-            set { _active = value; }
-        } 
         #endregion
     }
 }

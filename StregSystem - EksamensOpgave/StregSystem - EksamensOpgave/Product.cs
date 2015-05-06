@@ -10,12 +10,15 @@ namespace StregSystem___EksamensOpgave
     {
         protected int _productID;
         protected string _productName;
-        protected double _price;
+        protected decimal _price;
         protected bool _active;
         protected bool _canBeBoughtOncredit;
 
-
-        public Product(string productName, double productPrice, bool active, bool canBeBoughtOnCredit)
+        public Product()
+        {
+            //this should never be used
+        }
+        public Product(string productName, decimal productPrice, bool active, bool canBeBoughtOnCredit)
         {
             //der skal somehow checkes hvilke numre der er tilgængelige...måske skal det bare dumbes down til at de bliver assignet i en rækkefølge på runtime?
             //Måske skal productID ind som parameter, og hvis id'et så er taget skal der bedes om et nyt
@@ -39,7 +42,7 @@ namespace StregSystem___EksamensOpgave
             set { _productName = value; }
         }
 
-        public double Price
+        public decimal Price
         {
             get { return _price; }
             set { _price = value; }
