@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace StregSystem___EksamensOpgave
 {
-    public interface IStregsystemUI
+    interface IStregsystemUI
     {
         void DisplayUserNotFound();
         void DisplayProductNotFound();
@@ -22,13 +23,20 @@ namespace StregSystem___EksamensOpgave
     class StregSystemCLI : IStregsystemUI
     {
         private StregSystem _stregSystem;
+        string path = Directory.GetCurrentDirectory() + @"\products.csv";
         public StregSystemCLI(StregSystem stregSystem)
         {
             _stregSystem = stregSystem;
+            
         }
         public void Start(StregSystemCommandParser parser)
         {
-
+            //Skriv en loading skærm?
+            Console.WriteLine("-----------------------StregSystem Eks Opgave-----------------------");
+            Console.WriteLine("\n\n\n");
+            Console.WriteLine("Loading Product List!");
+            _stregSystem.ProductList = _stregSystem.LoadProductData(path);
+            system
         }
         public void DisplayUserNotFound()
         {

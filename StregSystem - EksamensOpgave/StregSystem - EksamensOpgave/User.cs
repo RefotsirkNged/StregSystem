@@ -93,6 +93,10 @@ namespace StregSystem___EksamensOpgave
             return (this._userID == u._userID);
         }
 
+        public override int GetHashCode()
+        {
+            return this.UserName.GetHashCode() ^ this.FirstName.GetHashCode() ^ this.LastName.GetHashCode();
+        }
 
         //MSDN ftw
         public int CompareTo(object obj)
