@@ -14,11 +14,7 @@ namespace StregSystem___EksamensOpgave
         protected decimal _transactionAmount;
 
 
-        public bool Execute()
-        {
-            //Supposed to execute the transaction, transfer funds so on
-            return true;
-        }
+        public bool Execute() { return true; }
         public override string ToString()
         {
             return _transactionID.ToString() + _transactionAmount.ToString() + _transactionDate.ToString();

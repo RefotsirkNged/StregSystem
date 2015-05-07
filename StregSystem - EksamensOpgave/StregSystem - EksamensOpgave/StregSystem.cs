@@ -110,10 +110,11 @@ namespace StregSystem___EksamensOpgave
                 }
             }
 
-            findAndDestroyHTML(dataFound);
+
 
             foreach (var item in dataFound)
             {
+
                 Product p = new Product();
                 int id;
                 Int32.TryParse(item[0], out id);
@@ -121,35 +122,37 @@ namespace StregSystem___EksamensOpgave
                 p.ProductName = item[1];
                 decimal price;
                 Decimal.TryParse(item[2], out price);
-                p.Price = price;
-                bool isActive;
-                Boolean.TryParse(item[3], out isActive);
-                p.Active = isActive;
+                p.Price = price/100;
+                if (item[3] == "0")
+                    p.Active = false;
+                if (item[3] == "1")
+                    p.Active = true;
+                findAndDestroyHTML(p);
                 productsFound.Add(p);
             }
             return productsFound;
         }
-        public List<string[]> findAndDestroyHTML(List<string[]> dataFound)
+        public void findAndDestroyHTML(Product p)
         {
-            foreach (var item in dataFound)
+            if (p.ProductName.Contains("<b>"))
             {
-                if (item[1].Contains("<b>") || item[1].Contains("</b>"))
-                {
-                    item[1].Replace("<b>", "");
-                    item[1].Replace("</b>", "");
-                }
-                if(item[1].Contains("<h2>") || item[1].Contains("</h2>"))
-                {
-                    item[1].Replace("<h2>", "");
-                    item[1].Replace("</h2>", "");
-                }
-                if (item[1].Contains("<h1>") || item[1].Contains("</h1>"))
-                {
-                    item[1].Replace("<h1>", "");
-                    item[1].Replace("</h1>", "");
-                }
+                p.ProductName = p.ProductName.Replace("<b>", "");
+                p.ProductName = p.ProductName.Replace("</b>", "");
             }
-            return dataFound;
+            if (p.ProductName.Contains("<h2>"))
+            {
+                p.ProductName = p.ProductName.Replace("<h2>", "");
+                p.ProductName = p.ProductName.Replace("</h2>", "");
+            }
+            if (p.ProductName.Contains("<h1>"))
+            {
+                p.ProductName = p.ProductName.Replace("<h1>", "");
+                p.ProductName = p.ProductName.Replace("</h1>", "");
+            }
+            if (p.ProductName.Contains("\""))
+            {
+                p.ProductName = p.ProductName.Replace("\"", "");
+            }
         }
     }
 }

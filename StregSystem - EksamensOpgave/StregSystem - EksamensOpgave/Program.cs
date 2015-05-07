@@ -14,6 +14,12 @@ namespace StregSystem___EksamensOpgave
             StregSystem stregsystem = new StregSystem();
             StregSystemCLI cli = new StregSystemCLI(stregsystem);
             StregSystemCommandParser parser = new StregSystemCommandParser(cli, stregsystem);
+            User u = new User("Kris", "Degn", "Kris373", "kristoffer@hylleby.dk");
+            u.Balance = 2000;
+            User u1 = new User("Mathias", "Leding", "ledning", "ledning@aalborg.dk");
+            u.Balance = 1;
+            stregsystem.UserList.Add(u);
+            stregsystem.UserList.Add(u1);
             cli.Start(parser);
         }
     }
