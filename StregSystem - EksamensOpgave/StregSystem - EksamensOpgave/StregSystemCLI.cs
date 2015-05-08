@@ -52,10 +52,8 @@ namespace StregSystem___EksamensOpgave
                 {
                     //catch no element from the admincommands lambda
                     //fang no elements in list ting fra addcredits i parseren
-                    Console.Clear();
-                    Console.WriteLine("Stuff threw somthin");
+                    ClearAndDrawTop();
                     Console.WriteLine(e.Message);
-                    Console.WriteLine(e.Data);
                     Console.ReadLine();
                 }
                 
