@@ -11,7 +11,6 @@ namespace StregSystem___EksamensOpgave
         StregSystem _stregSystem;
         StregSystemCLI _CLI;
         private Dictionary<string, Action<string[]>> _adminCommands = new Dictionary<string, Action<string[]>>();
-        private Dictionary<string, Action<string[]>> _userCommands = new Dictionary<string, Action<string[]>>();
 
         public StregSystemCommandParser(StregSystemCLI cli, StregSystem stregsystem)
         {
@@ -111,6 +110,7 @@ namespace StregSystem___EksamensOpgave
             
         }
 
+        //notimplemented
         public void userNameOnlyHelper()
         {
 
