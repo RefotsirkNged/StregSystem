@@ -10,57 +10,122 @@ namespace StregSystem___EksamensOpgave
     {
         StregSystem _stregSystem;
         StregSystemCLI _CLI;
-        public Dictionary<string, Action<string[]>> _adminCommands = new Dictionary<string, Action<string[]>>
-        {{":activate", }
-            ;
+        private Dictionary<string, Action<string[]>> _adminCommands = new Dictionary<string, Action<string[]>>();
+        private Dictionary<string, Action<string[]>> _userCommands = new Dictionary<string, Action<string[]>>();
+
         public StregSystemCommandParser(StregSystemCLI cli, StregSystem stregsystem)
         {
             _stregSystem = stregsystem;
             _CLI = cli;
+            //all the admin commands
+            _adminCommands.Add(":activate", toggleProductActive);
+            _adminCommands.Add(":deactivate", toggleProductActive);
+            _adminCommands.Add(":creditson", toggleProductCredit);
+            _adminCommands.Add(":creditsoff", toggleProductCredit);
+            _adminCommands.Add(":addcredits", insertCashTransactionHelper);
+            _adminCommands.Add(":quit", quitHelper);
+            _adminCommands.Add(":q", quitHelper);
+
+            //all the user commands
+
+
         }
-        //DICTIONARY SHIT FUCK NIGGER I HATE IT
         public void ParseCommand(string command)
         {
-            if (command[0] == ':')
+            string[] commandSplit = command.Split(' ');
+            if (commandSplit[0].StartsWith(":"))
             {
-                if (command.Contains("quit") || command == ":q")
+                var dictionaryValue = _adminCommands.FirstOrDefault(dv => dv.Key.Contains(commandSplit[0]));
+                if (dictionaryValue.Value != null)
                 {
-                    _CLI.Close();
+                    _adminCommands[dictionaryValue.Key].Invoke(commandSplit);
                 }
                 else
-                {
-                    string[] commandSplit = command.Split(' ');
-                    
-                    if (commandSplit[0].Contains(":activate") || commandSplit[0].Contains(":deactivate"))
-                    {
-                        
-                        toggleProductActive(commandSplit);
-                        
-                    }
-                    else if (commandSplit[0].Contains("crediton") || commandSplit[0].Contains("creditoff"))
-                    {
-                        toggleProductCredit(commandSplit);
-                    }
-                    else if (commandSplit[0].Contains("addcredits"))
-                    {
-                        insertCashTransactionHelper(commandSplit);
+                    _CLI.DisplayAdminCommandsNotFoundMessage();
 
-                    }
-                    else
-                    {
-                        _CLI.DisplayAdminCommandsNotFoundMessage();
-                    }
-                }
             }
+            else
+            {
+                if ((_stregSystem.UserList.FirstOrDefault(ul => ul.UserName == commandSplit[0]) != null))
+                {
+                    User u = (_stregSystem.UserList.FirstOrDefault(ul => ul.UserName == commandSplit[0]));
+                    if(commandSplit.Count() == 1) 
+                    {
+                        _CLI.DisplayUserInfo(u);
+                    }
+                    if (commandSplit.Count() == 2)
+                    {
+                        int n;
+                        if (!(int.TryParse(commandSplit[1], out n)))
+                        {
+                            _CLI.ThatWasNotANumber();
+                        }
+                        Product p = _stregSystem.ProductList.FirstOrDefault(pl => pl.ProductID.ToString() == commandSplit[1]);
+                        if (p != null)
+                        {
+                            BuyTransaction transaction = new BuyTransaction(u, p);
+                            transaction.Execute();
+                            _stregSystem.TransactionList.Add(transaction);
+                            _CLI.DisplayUserBuysProduct(transaction);
+                        }
+                        else
+                        {
+                            _CLI.DisplayProductNotFound();
+                        }
+                    }
+                    if (commandSplit.Count() == 3)
+                    {
+                        
+                        int n;
+                        if(!(int.TryParse(commandSplit[1], out n)) || !(int.TryParse(commandSplit[2], out n)))
+                        { 
+                            _CLI.ThatWasNotANumberMultiBuy();
+                        }
+                        int.TryParse(commandSplit[2], out n);
+                        if (!(n >= 0))
+                        {
+                            _CLI.ThatWasNotAPositiveNumberMultiBuy();
+                        }
+                        Product p = _stregSystem.ProductList.FirstOrDefault(pl => pl.ProductID.ToString() == commandSplit[1]);
+                        if (p != null)
+                        {
+                            if (!((u.Balance - p.Price * n) < 0))
+                            {
+                                BuyTransaction transaction = new BuyTransaction(u, p);
+                                for (int i = 0; i < n; i++)
+                                {
+                                   
+                                    transaction.Execute();
+                                    _stregSystem.TransactionList.Add(transaction);
+                                }
+                                _CLI.DisplayUserBuysProduct(n, transaction);
+                            }
+                        }
+                        
+                    }
+                   
+                }
+                else
+                    _CLI.DisplayUserNotFound(commandSplit[0]);
+            }
+            
+        }
+
+        public void userNameOnlyHelper()
+        {
 
         }
 
 
 
 
-
-
-
+        public void quitHelper(string[] commandSplit)
+        {
+            if (commandSplit[0].Contains("quit") || commandSplit[0] == ":q")
+            {
+                _CLI.Close();
+            }
+        }
         public void insertCashTransactionHelper(string[] commandSplit)
         {
             if (commandSplit[1] == null)
@@ -133,7 +198,7 @@ namespace StregSystem___EksamensOpgave
         }
         public void toggleProductActive(string[] commandSplit)
         {
-            
+
             //checking if the input is correct
             if (commandSplit[1] == null)
             {

@@ -32,8 +32,7 @@ namespace StregSystem___EksamensOpgave
         }
         public void Start(StregSystemCommandParser parser)
         {
-            Console.WriteLine("-----------------------StregSystem Eks Opgave-----------------------");
-            Console.WriteLine("\n\n\n");
+            ClearAndDrawTop();
             Console.WriteLine("Loading Product List!");
             _stregSystem.ProductList = _stregSystem.LoadProductData(path);
             Console.BufferHeight = _stregSystem.ProductList.Count + 2;
@@ -51,7 +50,7 @@ namespace StregSystem___EksamensOpgave
                 }
                 catch(Exception e)
                 {
-
+                    //catch no element from the admincommands lambda
                     //fang no elements in list ting fra addcredits i parseren
                     Console.Clear();
                     Console.WriteLine("Stuff threw somthin");
@@ -63,19 +62,35 @@ namespace StregSystem___EksamensOpgave
             }
         }
 
+        public void ThatWasNotANumber()
+        {
+            ClearAndDrawTop();
+            Console.WriteLine("That was not a number! \nCorrect format is: Username ProductID");
+            Console.ReadLine();
+        }
+        public void ThatWasNotAPositiveNumberMultiBuy()
+        {
+            ClearAndDrawTop();
+            Console.WriteLine("That was not a positive number! The number in amount has to be a positive format! \nCorrect format is: Username Amount ProductID");
+            Console.ReadLine();
+        }
+        public void ThatWasNotANumberMultiBuy()
+        {
+            ClearAndDrawTop(); ;
+            Console.WriteLine("That was not a number in either amount or product ID! \nCorrect format is: Username Amount ProductID");
+            Console.ReadLine();
+        }
+
         public void CreditsAdded(User user, decimal newBalance)
         {
-            Console.Clear();
-            Console.WriteLine("-----------------------StregSystem Eks Opgave-----------------------");
-            Console.WriteLine("\n");
+            ClearAndDrawTop();
             Console.WriteLine(newBalance + " kr added to user " + user.UserName + "'s balance.");
             Console.WriteLine("New balance: " + user.Balance);
             Console.ReadLine();
         }
         public void DisplayProductList()
         {
-            Console.WriteLine("-----------------------StregSystem Eks Opgave-----------------------");
-            Console.WriteLine("\n");
+            ClearAndDrawTop();
 
             foreach (Product item in _stregSystem.ProductList)
             {
@@ -84,10 +99,10 @@ namespace StregSystem___EksamensOpgave
                     Console.Write(item.ProductID + "  ");
                     Console.Write(item.ProductName + "  ");
                     Console.CursorLeft = Console.BufferWidth - 30;
-                    Console.Write("Pris: " + item.Price + "kr.\n");
+                    Console.Write("Price: " + item.Price + "kr.\n");
                 }
             }
-            Console.Write("\n");
+            Console.WriteLine("\n");
             Console.Write("quickBuy: ");
         }
         public void DisplayUserNotFound(string user)
@@ -104,60 +119,75 @@ namespace StregSystem___EksamensOpgave
             Console.ReadLine();
         }
 
-        public void DisplayUserInfo(User user)
+        public void ClearAndDrawTop()
         {
             Console.Clear();
             Console.WriteLine("-----------------------StregSystem Eks Opgave-----------------------");
             Console.WriteLine("\n");
+        }
+
+        public void DisplayUserInfo(User user)
+        {
+            ClearAndDrawTop();
             Console.WriteLine("Username: " + user.UserName);
             Console.WriteLine("Firstname: " + user.FirstName);
             Console.WriteLine("Lastname: " + user.LastName);
             Console.WriteLine("Email-Address: " + user.EmailAdrress);
             Console.WriteLine("UserID: " + user.UserID.ToString());
             Console.WriteLine("User balance: " + user.Balance.ToString());
+            var usertransactions = _stregSystem.TransactionList.Where(ut => ut.TransactionUser.UserID == user.UserID);
+            usertransactions.OrderBy(trans => trans.TransactionDate);
+            int TransactionsShown = 0;
+            foreach (var item in usertransactions)
+            {
+                Console.WriteLine(item.TransactionID.ToString() + item.TransactionUser + item.TransactionDate + item.TransactionAmount);
+                ++TransactionsShown;
+                if(TransactionsShown <= 10)
+                {
+                    break;
+                }
+            }
+            if(user.Balance < 50)
+            {
+                Console.WriteLine("You have less than 50kr left on your account. Please add funds!");
+            }
             Console.ReadLine();
         }
 
 
         public void DisplayTooManyArgumentsError()
         {
+            ClearAndDrawTop();
             Console.Clear();
-            Console.WriteLine("-----------------------StregSystem Eks Opgave-----------------------");
-            Console.WriteLine("\n");
-            Console.Clear();
-            Console.WriteLine("Stuff had too many arguments");
+            Console.WriteLine("That command had too many arguments");
             Console.ReadLine();
         }
 
         public void DisplayAdminCommandsNotFoundMessage()
         {
+            ClearAndDrawTop();
             Console.Clear();
-            Console.WriteLine("-----------------------StregSystem Eks Opgave-----------------------");
-            Console.WriteLine("\n");
-            Console.Clear();
-            Console.WriteLine("That Command Wasnt found!");
+            Console.WriteLine("That admin command wasnt found!");
             Console.ReadLine();
         }
 
         public void DisplayUserBuysProduct(BuyTransaction transaction)
         {
-            Console.WriteLine("-----------------------StregSystem Eks Opgave-----------------------");
-            Console.WriteLine("\n");
-            throw new NotImplementedException();
+            ClearAndDrawTop();
+            Console.WriteLine(transaction.TransactionUser.FirstName + " " + transaction.TransactionUser.LastName + " bought a " + transaction.ProductBeingBought.ProductName + ". \nNew user balance: " + transaction.TransactionUser.Balance);
+            Console.ReadLine();
         }
 
         public void DisplayUserBuysProduct(int count, BuyTransaction transaction)
         {
-            Console.WriteLine("-----------------------StregSystem Eks Opgave-----------------------");
-            Console.WriteLine("\n");
-            throw new NotImplementedException();
+            ClearAndDrawTop();
+            Console.WriteLine(transaction.TransactionUser.FirstName + " " + transaction.TransactionUser.LastName + " bought " + count + " " + transaction.ProductBeingBought.ProductName + ". \nNew user balance: " + transaction.TransactionUser.Balance);
+            Console.ReadLine();
         }
 
         public void Close()
         {
-            Console.Clear();
-            Console.WriteLine("-----------------------StregSystem Eks Opgave-----------------------");
-            Console.WriteLine("\n");
+            ClearAndDrawTop();
             Console.WriteLine("Thank you for using this program. CYA!");
             System.Threading.Thread.Sleep(1000);
             Environment.Exit(1);
@@ -170,9 +200,7 @@ namespace StregSystem___EksamensOpgave
 
         public void DisplayGeneralError(string errorString)
         {
-            Console.Clear();
-            Console.WriteLine("-----------------------StregSystem Eks Opgave-----------------------");
-            Console.WriteLine("\n");
+            ClearAndDrawTop();
             Console.WriteLine("Stuff was broke:" + errorString);
             Console.ReadLine();
         }

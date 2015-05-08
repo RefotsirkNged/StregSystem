@@ -17,7 +17,7 @@ namespace StregSystem___EksamensOpgave
         public bool Execute() { return true; }
         public override string ToString()
         {
-            return _transactionID.ToString() + _transactionAmount.ToString() + _transactionDate.ToString();
+            return _transactionID.ToString() + _transactionAmount.ToString() + _transactionDate.ToString() + _user.ToString();
         }
 
         #region Getter/setter

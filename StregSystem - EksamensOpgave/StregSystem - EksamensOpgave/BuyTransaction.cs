@@ -31,5 +31,11 @@ namespace StregSystem___EksamensOpgave
             TransactionUser.Balance -= TransactionAmount;
             return true;
         }
+
+        public Product ProductBeingBought
+        {
+            get { return _productBeingBought; }
+            set { _productBeingBought = value; }
+        }
     }
 }
