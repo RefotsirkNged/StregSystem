@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Text.RegularExpressions;
+using System.Net.Mail;
 
 namespace StregSystem___EksamensOpgave
 {
     interface IStregsystemUI
     {
-        void DisplayUserNotFound(string user
-            );
+        void DisplayUserNotFound(string user);
         void DisplayProductNotFound();
         void DisplayUserInfo(User user);
         void DisplayTooManyArgumentsError();
@@ -23,6 +24,7 @@ namespace StregSystem___EksamensOpgave
     }
     class StregSystemCLI : IStregsystemUI
     {
+        //stregsystemCommandLineInterface, i denne class sker alt output til brugeren
         private StregSystem _stregSystem;
         string path = Directory.GetCurrentDirectory() + @"\products.csv";
         public StregSystemCLI(StregSystem stregSystem)
@@ -30,14 +32,14 @@ namespace StregSystem___EksamensOpgave
             _stregSystem = stregSystem;
             
         }
+        //starter programmet, indeholder det while loop hele programmet ligger og kører rundt i.  allerførst bliver produktlisten loaded, og så er der ellers klar til at blive startet for systemet
         public void Start(StregSystemCommandParser parser)
         {
             ClearAndDrawTop();
             Console.WriteLine("Loading Product List!");
             _stregSystem.ProductList = _stregSystem.LoadProductData(path);
             Console.BufferHeight = _stregSystem.ProductList.Count + 2;
-            System.Threading.Thread.Sleep(500);
-            Console.Clear();
+            //System.Threading.Thread.Sleep(500);
 
             while(true)
             {
@@ -48,16 +50,78 @@ namespace StregSystem___EksamensOpgave
                 {
                     parser.ParseCommand(command);
                 }
+                catch (InsufficientCreditsException)
+                {
+                    DisplayInsufficientCash();
+                }
+                catch (NoProductsFoundException)
+                {
+                    ClearAndDrawTop();
+                    Console.WriteLine("No products were found!");
+                    Console.ReadLine();
+                }
                 catch(Exception e)
                 {
-                    //catch no element from the admincommands lambda
-                    //fang no elements in list ting fra addcredits i parseren
                     ClearAndDrawTop();
                     Console.WriteLine(e.Message);
                     Console.ReadLine();
                 }
                 
             }
+        }
+
+        public void DisplayAreYouSureScreen()
+        {
+            ClearAndDrawTop();
+            Console.WriteLine("Are you sure?(y/n)");
+            string decision = Console.ReadLine();
+            if (decision == "n")
+            {
+                throw new ArgumentException("Okay! Going back to main menu...");
+            }
+            else if (decision == "y")
+            {
+                return;
+            }
+        }
+
+        public void DisplayAddUserScreen()
+        {
+            string[] userInfo = new string[6];
+            Regex rxUserName = new Regex(@"^(?=.{8,20}$)(?![_.])(?!.*[_.]{2})[a-z0-9._]+(?<![_.])$");
+            Regex rxEmailAddress = new Regex(@"^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}" + @"\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\" + @".)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$");
+            ClearAndDrawTop();
+            Console.WriteLine("You are adding a new user!\n Start by entering username:\n");
+            userInfo[0] = Console.ReadLine();
+            while (!rxUserName.IsMatch(userInfo[0]))
+            {
+                Console.WriteLine("That is not a valid username! You must have both numbers and lower-case letters.");
+                userInfo[0] = Console.ReadLine();
+            }
+            Console.WriteLine("First name:");
+            userInfo[1] = Console.ReadLine();
+            while (userInfo[1] == "" || userInfo[1] == null)
+            {
+                Console.WriteLine("That is not a valid first name!");
+                userInfo[1] = Console.ReadLine();
+            }
+            Console.WriteLine("Last name:");
+            userInfo[2] = Console.ReadLine();
+            while (userInfo[2] == "" || userInfo[2] == null)
+            {
+                Console.WriteLine("That is not a valid last name!");
+                userInfo[2] = Console.ReadLine();
+            }
+            Console.WriteLine("Email-address:");
+            userInfo[3] = Console.ReadLine();
+            while (!rxEmailAddress.IsMatch(userInfo[3]))
+            {
+                Console.WriteLine("That is not a valid Email!");
+                userInfo[3] = Console.ReadLine();
+            }
+
+            User u = new User(userInfo[1], userInfo[2], userInfo[0], userInfo[3]);
+            _stregSystem.UserList.Add(u);
         }
 
         public void ThatWasNotANumber()
@@ -92,10 +156,10 @@ namespace StregSystem___EksamensOpgave
 
             foreach (Product item in _stregSystem.ProductList)
             {
-                if (item.Active == true)
+                if (item.Active)
                 {
-                    Console.Write(item.ProductID + "  ");
-                    Console.Write(item.ProductName + "  ");
+                    Console.Write(item.ProductID + "\t");
+                    Console.Write(item.ProductName + "\t");
                     Console.CursorLeft = Console.BufferWidth - 30;
                     Console.Write("Price: " + item.Price + "kr.\n");
                 }
@@ -106,14 +170,14 @@ namespace StregSystem___EksamensOpgave
         public void DisplayUserNotFound(string user)
         {
             Console.Clear();
-            Console.WriteLine("User " + user +  " wasnt found!");
+            Console.WriteLine("User " + user +  " wasn't found!");
             Console.ReadLine();
         }
 
         public void DisplayProductNotFound()
         {
             Console.Clear();
-            Console.WriteLine("Stuff (product) wasnt found");
+            Console.WriteLine("That product either dosent exist, or isnt active!");
             Console.ReadLine();
         }
 
@@ -187,19 +251,21 @@ namespace StregSystem___EksamensOpgave
         {
             ClearAndDrawTop();
             Console.WriteLine("Thank you for using this program. CYA!");
-            System.Threading.Thread.Sleep(1000);
+            System.Threading.Thread.Sleep(500);
             Environment.Exit(1);
         }
 
         public void DisplayInsufficientCash()
         {
-            throw new NotImplementedException();
+            ClearAndDrawTop();
+            Console.WriteLine("You dont have enough money!");
+            Console.ReadLine();
         }
 
         public void DisplayGeneralError(string errorString)
         {
             ClearAndDrawTop();
-            Console.WriteLine("Stuff was broke:" + errorString);
+            Console.WriteLine("Stuff is broken:" + errorString);
             Console.ReadLine();
         }
     }

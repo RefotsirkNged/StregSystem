@@ -9,30 +9,40 @@ namespace StregSystem___EksamensOpgave
 {
     class User : IComparable
     {
-        private Guid _userID;
         private string _firstName;
         private string _lastName;
         private string _userName;
-        
+        private static int _userIDIncrementor;
         private string _emailAddress;
-
+        private int _userID;
         private decimal _balance;
 
-        //pga af at et brugernavn nødvendigvis skal være unikt, kan et userid konstrueres ud fra brugernavnet. så måske skal userid ikke være GUID?
-        //Sørg for at firstname/lastname aldrig er null? i constructoren? er det nok?
 
         public User(string firstName, string lastName, string userName, string emailAddress )
         {
+            Regex rxUserName = new Regex(@"^(?=.{8,20}$)(?![_.])(?!.*[_.]{2})[a-z0-9._]+(?<![_.])$");
+            Regex rxEmailAddress = new Regex(@"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$");
             _firstName = firstName;
             _lastName = lastName;
+            if (!rxUserName.IsMatch(userName))
+            {
+                throw new ArgumentException("Username is not valid!");
+            }
             _userName = userName;
+            if (!rxEmailAddress.IsMatch(emailAddress))
+            {
+                throw new ArgumentException("Email is not valid!");
+            }
             _emailAddress = emailAddress;
             _balance = 0;
-            _userID = Guid.NewGuid();
+            User._userIDIncrementor++;
+            _userID = _userIDIncrementor;
         }
 
+
+
         #region Get/set
-        public Guid UserID
+        public int UserID
         {
             get { return _userID; }
             set { _userID = value; }

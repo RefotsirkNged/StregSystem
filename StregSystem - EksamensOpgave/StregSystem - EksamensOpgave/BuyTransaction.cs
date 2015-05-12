@@ -24,8 +24,7 @@ namespace StregSystem___EksamensOpgave
 
                 if ((TransactionUser.Balance - TransactionAmount) < 0)
                 {
-                    throw new InsufficientCreditsException("Ikke nok penge!");
-                    return false;
+                    throw new InsufficientCreditsException("Not enough cash!");
                 }
             //If no exception is thrown, do the stuff
             TransactionUser.Balance -= TransactionAmount;

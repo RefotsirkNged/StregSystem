@@ -23,6 +23,10 @@ namespace StregSystem___EksamensOpgave
 
         public new bool Execute()
         {
+            if(TransactionAmount <= 0)
+            {
+                throw new ArgumentException("You can't add a negative amount of money!");
+            }
             TransactionUser.Balance += TransactionAmount;
             return true;
         }

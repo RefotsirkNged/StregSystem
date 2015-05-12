@@ -13,8 +13,11 @@ namespace StregSystem___EksamensOpgave
         protected DateTime _transactionDate;
         protected decimal _transactionAmount;
 
-
-        public bool Execute() { return true; }
+        public Transaction()
+        {
+            _transactionID = Guid.NewGuid();
+        }
+        public bool Execute(){return true;}
         public override string ToString()
         {
             return _transactionID.ToString() + _transactionAmount.ToString() + _transactionDate.ToString() + _user.ToString();

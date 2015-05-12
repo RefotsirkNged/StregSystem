@@ -24,6 +24,7 @@ namespace StregSystem___EksamensOpgave
             _adminCommands.Add(":addcredits", insertCashTransactionHelper);
             _adminCommands.Add(":quit", quitHelper);
             _adminCommands.Add(":q", quitHelper);
+            _adminCommands.Add(":adduser", addUserHelper);
 
             //all the user commands
 
@@ -32,9 +33,13 @@ namespace StregSystem___EksamensOpgave
         public void ParseCommand(string command)
         {
             string[] commandSplit = command.Split(' ');
-            if (commandSplit[0].StartsWith(":"))
+            if (commandSplit.Count() == 0)
             {
-                var dictionaryValue = _adminCommands.FirstOrDefault(dv => dv.Key.Contains(commandSplit[0]));
+                return;
+            }
+            else if (commandSplit[0].StartsWith(":"))
+            {
+                var dictionaryValue = _adminCommands.FirstOrDefault(dv => dv.Key.Equals(commandSplit[0]));
                 if (dictionaryValue.Value != null)
                 {
                     _adminCommands[dictionaryValue.Key].Invoke(commandSplit);
@@ -54,22 +59,25 @@ namespace StregSystem___EksamensOpgave
                     }
                     if (commandSplit.Count() == 2)
                     {
-                        int n;
-                        if (!(int.TryParse(commandSplit[1], out n)))
-                        {
-                            _CLI.ThatWasNotANumber();
-                        }
+
                         Product p = _stregSystem.ProductList.FirstOrDefault(pl => pl.ProductID.ToString() == commandSplit[1]);
                         if (p != null)
                         {
-                            BuyTransaction transaction = new BuyTransaction(u, p);
-                            transaction.Execute();
-                            _stregSystem.TransactionList.Add(transaction);
-                            _CLI.DisplayUserBuysProduct(transaction);
+                            _stregSystem.BuyProduct(u, p);
+                            BuyTransaction bt = new BuyTransaction(u, p);
+                            _CLI.DisplayUserBuysProduct(bt);
                         }
                         else
                         {
-                            _CLI.DisplayProductNotFound();
+                            int n;
+                            if (!(int.TryParse(commandSplit[1], out n)))
+                            {
+                                _CLI.ThatWasNotANumber();
+                            }
+                            else
+                            {
+                                _CLI.DisplayProductNotFound();
+                            }
                         }
                     }
                     if (commandSplit.Count() == 3)
@@ -86,19 +94,28 @@ namespace StregSystem___EksamensOpgave
                             _CLI.ThatWasNotAPositiveNumberMultiBuy();
                         }
                         Product p = _stregSystem.ProductList.FirstOrDefault(pl => pl.ProductID.ToString() == commandSplit[1]);
-                        if (p != null)
+                        if (p != null && p.Active)
                         {
                             if (!((u.Balance - p.Price * n) < 0))
                             {
                                 BuyTransaction transaction = new BuyTransaction(u, p);
                                 for (int i = 0; i < n; i++)
                                 {
-                                   
-                                    transaction.Execute();
-                                    _stregSystem.TransactionList.Add(transaction);
+
+                                    _stregSystem.BuyProduct(u, p);
+                                    
                                 }
-                                _CLI.DisplayUserBuysProduct(n, transaction);
+                                BuyTransaction bt = new BuyTransaction(u, p);
+                                _CLI.DisplayUserBuysProduct(n, bt);
                             }
+                            else
+                            {
+                                throw new InsufficientCreditsException();
+                            }
+                        }
+                        else
+                        {
+                            _CLI.DisplayProductNotFound();
                         }
                         
                     }
@@ -110,19 +127,16 @@ namespace StregSystem___EksamensOpgave
             
         }
 
-        //notimplemented
-        public void userNameOnlyHelper()
+        //helper functions used in the admincommandsdictionary
+        public void addUserHelper(string[] commandSplit)
         {
-
+            _CLI.DisplayAddUserScreen();
         }
-
-
-
-
         public void quitHelper(string[] commandSplit)
         {
-            if (commandSplit[0].Contains("quit") || commandSplit[0] == ":q")
+            if (commandSplit[0].Equals(":quit") || commandSplit[0].Equals(":q"))
             {
+                _CLI.DisplayAreYouSureScreen();
                 _CLI.Close();
             }
         }
@@ -149,8 +163,7 @@ namespace StregSystem___EksamensOpgave
                 {
                     decimal amount;
                     Decimal.TryParse(commandSplit[2], out amount);
-                    InsertCashTransaction ict = new InsertCashTransaction(userFound, amount);
-                    ict.Execute();
+                    _stregSystem.AddCreditsToAccount(userFound, amount);
                     _stregSystem.UserList[index] = userFound;
                     _CLI.CreditsAdded(userFound, amount);
                 }
@@ -170,7 +183,7 @@ namespace StregSystem___EksamensOpgave
             else
             {
                 Product productFound;
-                productFound = _stregSystem.ProductList.First(pl => pl.ProductID.ToString() == commandSplit[1].ToString());
+                productFound = _stregSystem.ProductList.FirstOrDefault(pl => pl.ProductID.ToString() == commandSplit[1].ToString());
                 int index = _stregSystem.ProductList.FindIndex(pl => pl.ProductID.ToString() == commandSplit[1].ToString());
                 if (productFound == null)
                 {
@@ -214,7 +227,7 @@ namespace StregSystem___EksamensOpgave
             {
                 
                 Product productFound;
-                productFound = _stregSystem.ProductList.First(pl => pl.ProductID.ToString() == commandSplit[1].ToString());
+                productFound = _stregSystem.ProductList.FirstOrDefault(pl => pl.ProductID.ToString() == commandSplit[1].ToString());
                 int index = _stregSystem.ProductList.FindIndex(pl => pl.ProductID.ToString() == commandSplit[1].ToString());
                 if (productFound == null)
                 {
